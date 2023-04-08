@@ -6,6 +6,8 @@ import (
 	"log"
 	"mime"
 	"os"
+	"strconv"
+	"time"
 	"video/internal/domain"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,6 +31,10 @@ func (p *partialVideo) Unmarshal(body []byte) error {
 }
 func (p *partialCreateVideo) Unmarshal(body []byte) error {
 	return json.Unmarshal(body, &p)
+}
+
+func (p *partialCreateVideo) UnmarshalString(body string) error {
+	return json.Unmarshal([]byte(body), &p)
 }
 
 func Uploader(router fiber.Router) {
@@ -66,6 +72,45 @@ func Uploader(router fiber.Router) {
 		if !ok {
 			return fmt.Errorf("filename parameter not found")
 		}
+
+		video := new(domain.Videos)
+		video.VideoURL = filename
+		video.CreationDate = time.Now().Format("2006-01-02")
+
+		channel := new(domain.Channel)
+
+		partial := new(partialCreateVideo)
+
+		videosProperties, ok := form.Value["info"]
+		if !ok {
+			return fmt.Errorf("info parameter not found")
+		}
+
+		if err := partial.UnmarshalString(videosProperties[0]); err != nil {
+			return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+				"err": err.Error(),
+			})
+		}
+
+		channel.Id = uint(partial.ChannelId)
+
+		if channel.Get() == nil {
+			return c.SendStatus(fiber.ErrBadGateway.Code)
+		}
+
+		video.ChannelId = channel.Get().Id
+
+		if partial.Name != "" {
+			video.Name = partial.Name
+		}
+		if partial.Description != "" {
+			video.Description = partial.Description
+		}
+		if partial.Icon != "" {
+			video.Icon = partial.Icon
+		}
+
+		video.Create()
 
 		// Return success
 		return c.SaveFile(file, fmt.Sprintf("./data/%s", filename))
@@ -116,7 +161,7 @@ func Uploader(router fiber.Router) {
 			return c.SendStatus(fiber.ErrBadGateway.Code)
 		}
 
-		video.ChannelId = *channel.Get()
+		video.ChannelId = channel.Get().Id
 
 		if partial.Name != "" {
 			video.Name = partial.Name
@@ -214,5 +259,20 @@ func Uploader(router fiber.Router) {
 
 		// Return the file names as a JSON response
 		return c.JSON(fileNames)
+	})
+
+	router.Get("/files/:id", func(c *fiber.Ctx) error {
+		video := domain.Videos{}
+		videoParams := c.Params("id")
+
+		videoId, err := strconv.ParseUint(videoParams, 10, len(videoParams))
+
+		if err != nil {
+			return c.Status(fiber.ErrBadGateway.Code).JSON(err)
+		}
+
+		video.Id = uint(videoId)
+
+		return c.SendFile(video.VideoURL)
 	})
 }

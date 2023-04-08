@@ -1,12 +1,14 @@
 package domain
 
 type Videos struct {
-	Id          uint    `gorm:"primarykey;autoIncrement;not null"`
-	Name        string  `gorm:"type:varchar(255);"`
-	Description string  `gorm:"type:varchar(255);"`
-	Icon        string  `gorm:"type:varchar(255);"`
-	VideoURL    string  `gorm:"type:varchar(255);"`
-	ChannelId   Channel `gorm:"foreignKey:ChannelId"`
+	Id           uint   `gorm:"primarykey;autoIncrement;not null"`
+	Name         string `gorm:"type:varchar(255);"`
+	Description  string `gorm:"type:varchar(255);"`
+	Icon         string `gorm:"type:varchar(255);"`
+	VideoURL     string `gorm:"type:varchar(255);"`
+	ChannelId    uint   `gorm:"foreignKey:id"`
+	Channel      Channel
+	CreationDate string `gorm:"type:date;"`
 }
 
 func (channel *Channel) Get() *Channel {
@@ -40,7 +42,7 @@ func (video *Videos) Get() *Videos {
 }
 
 func (video *Videos) Find() bool {
-	tx := Db.Where("videourl = ?", video.VideoURL).Find(video)
+	tx := Db.Where("video_url = ?", video.VideoURL).Find(video)
 	return tx.RowsAffected != 0
 }
 

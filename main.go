@@ -36,7 +36,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	domain.Db.AutoMigrate(&domain.UserModel{})
+	domain.Db.AutoMigrate(&domain.Channel{})
+	domain.Db.AutoMigrate(&domain.Videos{})
 
 	// Start Fiber app
 	http.Http().Listen(appListen)

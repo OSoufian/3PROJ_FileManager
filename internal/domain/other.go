@@ -6,8 +6,8 @@ var Db *gorm.DB
 
 type Channel struct {
 	Id          uint `gorm:"primarykey;autoIncrement;not null"`
-	OwerId      int
-	Owner       UserModel   `gorm:"foreignKey:OwerId"`
+	OwnerId     uint `gorm:"not null; foreignKey:Owner"`
+	Owner       UserModel
 	Description string      `gorm:"type:varchar(255);"`
 	SocialLink  string      `gorm:"type:varchar(255);"`
 	Banner      string      `gorm:"type:varchar(255);"`
@@ -37,4 +37,14 @@ type UserModel struct {
 	Disable       bool      `gorm:"type:bool; default false"`
 	Subscribtion  []Channel `gorm:"many2many:channel_subscription;"`
 	Role          []Role    `gorm:"many2many:user_roles;"`
+}
+
+func (user *UserModel) TableName() string {
+	return "users"
+}
+func (r *Role) TableName() string {
+	return "roles"
+}
+func (channel *Channel) TableName() string {
+	return "channels"
 }

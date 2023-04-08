@@ -3,7 +3,6 @@ package http
 import (
 	_ "video/docs"
 
-	"os"
 	"video/internal/http/controllers"
 
 	fiberSwagger "github.com/swaggo/fiber-swagger"
@@ -42,7 +41,7 @@ func Http() *fiber.App {
 
 	app.Use(cors.New(cors.Config{
 		Next:             nil,
-		AllowOrigins:     os.Getenv("Orgins"),
+		AllowOrigins:     "*",
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
 		AllowHeaders:     "",
 		AllowCredentials: false,
@@ -64,7 +63,7 @@ func Http() *fiber.App {
 		Title: "Upload Monitor",
 	}))
 
-	controllers.Uploader(app.Group("/upload"))
+	controllers.Uploader(app.Group("/files"))
 
 	return app
 }
