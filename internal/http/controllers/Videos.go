@@ -3,7 +3,6 @@ package controllers
 import (
     "strconv"
     "video/internal/domain"
-    "log"
 
     "github.com/gofiber/fiber/v2"
 )
