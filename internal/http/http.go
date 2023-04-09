@@ -64,6 +64,7 @@ func Http() *fiber.App {
 	}))
 
 	controllers.Uploader(app.Group("/files"))
+	controllers.Videos(app.Group("/videos"))
 
 	return app
 }

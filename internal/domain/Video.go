@@ -6,8 +6,9 @@ type Videos struct {
 	Description  string `gorm:"type:varchar(255);"`
 	Icon         string `gorm:"type:varchar(255);"`
 	VideoURL     string `gorm:"type:varchar(255);"`
-	ChannelId    uint   `gorm:"foreignKey:id"`
+	ChannelId    uint   `gorm:"foreignKey:id" json:"-"`
 	Channel      Channel
+	Views		 uint64 `gorm:"type:integer;"`
 	CreationDate string `gorm:"type:date;"`
 }
 
@@ -39,6 +40,25 @@ func (video *Videos) Get() *Videos {
 	}
 	return video
 
+}
+
+func (video *Videos) GetById() *Videos {
+
+    tx := Db.Where("id = ?", video.Id).Find(video)
+    if tx.RowsAffected == 0 {
+        return nil
+    }
+    return video
+
+}
+
+func (videos *Videos) GetAll() ([]Videos, error) {
+    var results []Videos
+    err := Db.Find(&results).Error
+    if err != nil {
+        return nil, err
+    }
+    return results, nil
 }
 
 func (video *Videos) Find() bool {
