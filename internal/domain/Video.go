@@ -12,7 +12,6 @@ type Videos struct {
 	ChannelId    uint      `gorm:"foreignKey:id"`
 	CreationDate time.Time `gorm:"type:datetime"`
 	IsBlock      bool      `gorm:"type:boolean;default:false"`
-	IsHide       bool      `gorm:"type:boolean;default:false"`
 }
 
 func (channel *Channel) Get() *Channel {
@@ -35,6 +34,17 @@ func (video *Videos) GetChannel() *Channel {
 	}
 
 	return channel
+}
+
+func (video *Videos) GetAllVideosFromChannel() []Videos {
+	var videos []Videos 
+	err := Db.Where("channel_id = ?", video.ChannelId)
+	if err != nil {
+		return nil
+	}
+
+	return videos
+
 }
 
 func (video *Videos) TableName() string {

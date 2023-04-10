@@ -23,7 +23,7 @@ type partialCreateVideo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Icon        string `json:"icon"`
-	ChannelId   uint64 `json:"channelId"`
+	ChannelId   int64 `json:"channelId"`
 }
 
 func (p *partialVideo) Unmarshal(body []byte) error {
@@ -39,9 +39,11 @@ func (p *partialCreateVideo) UnmarshalString(body string) error {
 
 func Uploader(router fiber.Router) {
 
-	router.Post("/", func(c *fiber.Ctx) error {
+	router.Post("/:type", func(c *fiber.Ctx) error {
 
 		// c.Request().ContinueReadBodyStream()
+
+		fileType := "video"
 
 		// Get the file from form data
 		form, err := c.MultipartForm()
@@ -54,6 +56,7 @@ func Uploader(router fiber.Router) {
 		if len(files) == 0 {
 			// Change to match your field name
 			files = form.File["image"]
+			fileType = "image"
 		}
 
 		if len(files) == 0 {
@@ -73,44 +76,47 @@ func Uploader(router fiber.Router) {
 			return fmt.Errorf("filename parameter not found")
 		}
 
-		video := new(domain.Videos)
-		video.VideoURL = filename
-		video.CreationDate = time.Now()
+		if fileType == "video" {
 
-		channel := new(domain.Channel)
+			video := new(domain.Videos)
+			video.VideoURL = filename
+			video.CreationDate = time.Now()
 
-		partial := new(partialCreateVideo)
+			channel := new(domain.Channel)
 
-		videosProperties, ok := form.Value["info"]
-		if !ok {
-			return fmt.Errorf("info parameter not found")
+			partial := new(partialCreateVideo)
+
+			videosProperties, ok := form.Value["info"]
+			if !ok {
+				return fmt.Errorf("info parameter not found")
+			}
+
+			if err := partial.UnmarshalString(videosProperties[0]); err != nil {
+				return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
+					"err": err.Error(),
+				})
+			}
+
+			channel.Id = uint(partial.ChannelId)
+
+			if channel.Get() == nil {
+				return c.SendStatus(fiber.ErrBadGateway.Code)
+			}
+
+			video.ChannelId = channel.Get().Id
+
+			if partial.Name != "" {
+				video.Name = partial.Name
+			}
+			if partial.Description != "" {
+				video.Description = partial.Description
+			}
+			if partial.Icon != "" {
+				video.Icon = partial.Icon
+			}
+
+			video.Create()
 		}
-
-		if err := partial.UnmarshalString(videosProperties[0]); err != nil {
-			return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-				"err": err.Error(),
-			})
-		}
-
-		channel.Id = uint(partial.ChannelId)
-
-		if channel.Get() == nil {
-			return c.SendStatus(fiber.ErrBadGateway.Code)
-		}
-
-		video.ChannelId = channel.Get().Id
-
-		if partial.Name != "" {
-			video.Name = partial.Name
-		}
-		if partial.Description != "" {
-			video.Description = partial.Description
-		}
-		if partial.Icon != "" {
-			video.Icon = partial.Icon
-		}
-
-		video.Create()
 
 		// Return success
 		return c.SaveFile(file, fmt.Sprintf("./data/%s", filename))

@@ -31,4 +31,20 @@ func Videos(router fiber.Router) {
         return c.Status(fiber.StatusAccepted).JSON(video.GetById())
     })
 
+    router.Get("/chann/:channId", func(c *fiber.Ctx) error {
+        id := c.Params("channId")
+        channId, err := strconv.ParseInt(id, 10, 64)
+
+        if err != nil {
+            return c.Status(fiber.ErrBadRequest.Code).JSON(err)
+        }
+
+        video := domain.Videos{}
+
+        video.ChannelId = uint(channId)
+
+        return c.Status(fiber.StatusAccepted).JSON(video.GetAllVideosFromChannel())
+
+    })
+
 }
