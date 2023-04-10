@@ -9,6 +9,7 @@ type Videos struct {
 	Icon         string    `gorm:"type:varchar(255);"`
 	VideoURL     string    `gorm:"type:varchar(255);"`
 	Views        int       `gorm:"type:integer default:0"`
+	Size 		 int64 	   `gorm:"type:integer"`	
 	ChannelId    uint      `gorm:"foreignKey:id"`
 	CreationDate time.Time `gorm:"type:datetime"`
 	IsBlock      bool      `gorm:"type:boolean;default:false"`
@@ -87,7 +88,7 @@ func (video *Videos) GetAll() ([]Videos, error) {
 }
 
 func (video *Videos) Find() bool {
-	tx := Db.Where("videourl = ?", video.VideoURL).Find(video)
+	tx := Db.Where("video_url = ?", video.VideoURL).Find(video)
 	return tx.RowsAffected != 0
 }
 

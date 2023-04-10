@@ -114,6 +114,8 @@ func Uploader(router fiber.Router) {
 			if partial.Icon != "" {
 				video.Icon = partial.Icon
 			}
+			
+			video.Size = file.Size
 
 			video.Create()
 		}
