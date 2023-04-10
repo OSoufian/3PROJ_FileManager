@@ -1,13 +1,18 @@
 package domain
 
+import "time"
+
 type Videos struct {
-	Id           uint   `gorm:"primarykey;autoIncrement;not null"`
-	Name         string `gorm:"type:varchar(255);"`
-	Description  string `gorm:"type:varchar(255);"`
-	Icon         string `gorm:"type:varchar(255);"`
-	VideoURL     string `gorm:"type:varchar(255);"`
-	ChannelId    uint   `gorm:"foreignKey:id"`
-	CreationDate string `gorm:"type:date;"`
+	Id           uint      `gorm:"primarykey;autoIncrement;not null"`
+	Name         string    `gorm:"type:varchar(255);"`
+	Description  string    `gorm:"type:varchar(255);"`
+	Icon         string    `gorm:"type:varchar(255);"`
+	VideoURL     string    `gorm:"type:varchar(255);"`
+	Views        int       `gorm:"type:integer default:0"`
+	ChannelId    uint      `gorm:"foreignKey:id"`
+	CreationDate time.Time `gorm:"type:datetime"`
+	IsBlock      bool      `gorm:"type:boolean;default:false"`
+	IsHide       bool      `gorm:"type:boolean;default:false"`
 }
 
 func (channel *Channel) Get() *Channel {

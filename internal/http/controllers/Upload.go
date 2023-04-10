@@ -75,7 +75,7 @@ func Uploader(router fiber.Router) {
 
 		video := new(domain.Videos)
 		video.VideoURL = filename
-		video.CreationDate = time.Now().Format("2006-01-02")
+		video.CreationDate = time.Now()
 
 		channel := new(domain.Channel)
 
