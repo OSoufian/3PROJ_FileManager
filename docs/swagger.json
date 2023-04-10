@@ -27,6 +27,195 @@
                     }
                 }
             }
+        },
+        "/files": {
+            "get": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "Blob"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "put": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "video info",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "post": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "video info",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "delete": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            },
+            "patch": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "video info",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/files/:id": {
+            "get": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "video info",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/files/detail": {
+            "get": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "video info",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/files/files": {
+            "get": {
+                "description": "retrieve a file",
+                "tags": [
+                    "Files"
+                ],
+                "summary": "Files",
+                "responses": {
+                    "200": {
+                        "description": "video info",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/videos/:videoID": {
+            "get": {
+                "description": "get a video by id",
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Videos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        },
+        "/videos/chann/:channId": {
+            "get": {
+                "description": "get all videos from a channel",
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Videos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "Videos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
         }
     }
 }

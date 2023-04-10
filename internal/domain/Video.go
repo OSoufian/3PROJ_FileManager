@@ -3,14 +3,15 @@ package domain
 import "time"
 
 type Videos struct {
-	Id           uint      `gorm:"primarykey;autoIncrement;not null"`
-	Name         string    `gorm:"type:varchar(255);"`
-	Description  string    `gorm:"type:varchar(255);"`
-	Icon         string    `gorm:"type:varchar(255);"`
-	VideoURL     string    `gorm:"type:varchar(255);"`
-	Views        int       `gorm:"type:integer default:0"`
-	Size 		 int64 	   `gorm:"type:integer"`	
-	ChannelId    uint      `gorm:"foreignKey:id"`
+	Id           uint   `gorm:"primarykey;autoIncrement;not null"`
+	Name         string `gorm:"type:varchar(255);"`
+	Description  string `gorm:"type:varchar(255);"`
+	Icon         string `gorm:"type:varchar(255);"`
+	VideoURL     string `gorm:"type:varchar(255);"`
+	Views        int    `gorm:"type:integer default:0"`
+	Size         int64  `gorm:"type:integer"`
+	ChannelId    uint   `gorm:"foreignKey:id"`
+	Channel      Channel
 	CreationDate time.Time `gorm:"type:datetime"`
 	IsBlock      bool      `gorm:"type:boolean;default:false"`
 }
@@ -38,7 +39,7 @@ func (video *Videos) GetChannel() *Channel {
 }
 
 func (video *Videos) GetAllVideosFromChannel() []Videos {
-	var videos []Videos 
+	var videos []Videos
 	err := Db.Where("channel_id = ?", video.ChannelId)
 	if err != nil {
 		return nil
