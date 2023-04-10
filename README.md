@@ -13,9 +13,4 @@ go mod tidy
 go run .
 ```
 
-New terminal or same
-
-```sh
-cd front
-npm i 
-npm run serve
+New terminal and run all others api and front
