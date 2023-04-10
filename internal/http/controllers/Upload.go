@@ -107,7 +107,7 @@ func fileUpload(c *fiber.Ctx) error {
 
 		video := new(domain.Videos)
 		video.VideoURL = filename
-		video.CreationDate = time.Now()
+		video.CreationAt = time.Now()
 
 		channel := new(domain.Channel)
 
