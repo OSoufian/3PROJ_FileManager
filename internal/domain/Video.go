@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 type Videos struct {
 	Id          uint   `gorm:"primarykey;autoIncrement;not null"`
 	Name        string `gorm:"type:varchar(255);"`
@@ -12,8 +10,8 @@ type Videos struct {
 	Size        int64  `gorm:"type:integer"`
 	ChannelId   uint   `gorm:"foreignKey:id"`
 	Channel     Channel
-	CreationAt  time.Time `gorm:"type:time without time zone"`
-	IsBlock     bool      `gorm:"type:boolean;default:false"`
+	CreatedAt   string `gorm:"type:time with time zone"`
+	IsBlock     bool   `gorm:"type:boolean;default:false"`
 }
 
 func (channel *Channel) Get() *Channel {

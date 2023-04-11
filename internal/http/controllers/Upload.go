@@ -7,6 +7,7 @@ import (
 	"mime"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"video/internal/domain"
 
@@ -107,7 +108,6 @@ func fileUpload(c *fiber.Ctx) error {
 
 		video := new(domain.Videos)
 		video.VideoURL = filename
-		video.CreationAt = time.Now()
 
 		channel := new(domain.Channel)
 
@@ -143,6 +143,10 @@ func fileUpload(c *fiber.Ctx) error {
 		}
 
 		video.Size = file.Size
+
+		t := strings.Split(time.Now().UTC().Local().String(), " ")
+
+		video.CreatedAt = strings.Join(t[:len(t)-1], " ")
 
 		video.Create()
 	}
