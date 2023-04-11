@@ -24,18 +24,6 @@ func (channel *Channel) Get() *Channel {
 	return channel
 }
 
-func (video *Videos) GetChannel() *Channel {
-	var channel *Channel
-	err := Db.Joins("JOIN channels c ON c.id = video_info.channel_id").
-		Where("video_info.id = ?", video.Id).
-		First(&channel).Error
-	if err != nil {
-		return nil
-	}
-
-	return channel
-}
-
 func (video *Videos) GetAllVideosFromChannel() []Videos {
 	var videos []Videos
 	err := Db.Where("channel_id = ?", video.ChannelId)
@@ -96,9 +84,5 @@ func (video *Videos) Delete() {
 }
 
 func (video *Videos) Update() {
-
-	channel := video.GetChannel()
-	video.ChannelId = channel.Id
-
 	Db.Save(&video)
 }

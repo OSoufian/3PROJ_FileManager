@@ -13,16 +13,20 @@ import (
 )
 
 type partialVideo struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Icon        string `json:"icon"`
+	Id          uint   `json:"Id"`
+	Name        string `json:"Name"`
+	Description string `json:"Description"`
+	Icon        string `json:"Icon"`
+	VideoURL    string `json:"VideoURL"`
+	Views       int    `json:"Views"`
+	Size        int64  `json:"Size"`
+	CreatedAt   string `json:"CreatedAt"`
+	IsBlock     bool   `json:"IsBlock"`
 }
 
 type partialCreateVideo struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Icon        string `json:"icon"`
-	ChannelId   int64  `json:"channelId"`
+	partialVideo
+	ChannelId int64 `json:"channelId"`
 }
 
 func (p *partialVideo) Unmarshal(body []byte) error {
@@ -245,12 +249,9 @@ func createWithoutUplaod(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /files [patch]
 func patchVideoByFileName(c *fiber.Ctx) error {
-	path := c.Query("id")
+	// path := c.Query("path")
 
 	video := new(domain.Videos)
-	video.VideoURL = path
-	video.Get()
-	log.Println(video)
 
 	partial := new(partialVideo)
 	if err := partial.Unmarshal(c.Body()); err != nil {
@@ -258,6 +259,9 @@ func patchVideoByFileName(c *fiber.Ctx) error {
 			"err": err.Error(),
 		})
 	}
+	video.Id = partial.Id
+
+	video.GetById()
 
 	if partial.Name != "" {
 		video.Name = partial.Name
