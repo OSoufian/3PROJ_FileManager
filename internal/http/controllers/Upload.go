@@ -148,9 +148,11 @@ func fileUpload(c *fiber.Ctx) error {
 
 		video.Create()
 	}
-
+	if err := c.SaveFile(file, fmt.Sprintf("./data/%s", filename)); err != nil {
+		return err
+	}
 	// Return success
-	return c.SaveFile(file, fmt.Sprintf("./data/%s", filename))
+	return c.Status(fiber.StatusAccepted).SendString(fmt.Sprintf("./data/%s", filename))
 }
 
 // Get All videos
