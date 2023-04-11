@@ -7,8 +7,6 @@ import (
 	"mime"
 	"os"
 	"strconv"
-	"strings"
-	"time"
 	"video/internal/domain"
 
 	"github.com/gofiber/fiber/v2"
@@ -144,10 +142,6 @@ func fileUpload(c *fiber.Ctx) error {
 
 		video.Size = file.Size
 
-		t := strings.Split(time.Now().UTC().Local().String(), " ")
-
-		video.CreatedAt = strings.Join(t[:len(t)-1], " ")
-
 		video.Create()
 	}
 
@@ -251,11 +245,12 @@ func createWithoutUplaod(c *fiber.Ctx) error {
 // @Failure 404
 // @Router /files [patch]
 func patchVideoByFileName(c *fiber.Ctx) error {
-	path := c.Query("path")
+	path := c.Query("id")
 
 	video := new(domain.Videos)
 	video.VideoURL = path
-	video = video.Get()
+	video.Get()
+	log.Println(video)
 
 	partial := new(partialVideo)
 	if err := partial.Unmarshal(c.Body()); err != nil {

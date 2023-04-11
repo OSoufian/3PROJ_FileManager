@@ -96,5 +96,9 @@ func (video *Videos) Delete() {
 }
 
 func (video *Videos) Update() {
+
+	channel := video.GetChannel()
+	video.ChannelId = channel.Id
+
 	Db.Save(&video)
 }
