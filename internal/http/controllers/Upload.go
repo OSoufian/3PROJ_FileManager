@@ -7,6 +7,8 @@ import (
 	"mime"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 	"video/internal/domain"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,7 +28,7 @@ type partialVideo struct {
 
 type partialCreateVideo struct {
 	partialVideo
-	ChannelId int64 `json:"channelId"`
+	ChannelId int64 `json:"channId"`
 }
 
 func (p *partialVideo) Unmarshal(body []byte) error {
@@ -59,7 +61,7 @@ func Uploader(router fiber.Router) {
 	router.Get("/files/:id", getVideoByFileId)
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -90,7 +92,7 @@ func fileUpload(c *fiber.Ctx) error {
 	}
 
 	if len(files) == 0 {
-		return fmt.Errorf("no file found")
+		return c.SendString("no file found")
 	}
 	file := files[0]
 
@@ -103,7 +105,7 @@ func fileUpload(c *fiber.Ctx) error {
 	}
 	filename, ok := params["filename"]
 	if !ok {
-		return fmt.Errorf("filename parameter not found")
+		return c.SendString("filename parameter not found")
 	}
 
 	if fileType == "video" {
@@ -127,12 +129,12 @@ func fileUpload(c *fiber.Ctx) error {
 		}
 
 		channel.Id = uint(partial.ChannelId)
-
-		if channel.Get() == nil {
+		channel, err := channel.Get()
+		if err != nil {
 			return c.SendStatus(fiber.ErrBadGateway.Code)
 		}
 
-		video.ChannelId = channel.Get().Id
+		video.ChannelId = channel.Id
 
 		if partial.Name != "" {
 			video.Name = partial.Name
@@ -146,16 +148,20 @@ func fileUpload(c *fiber.Ctx) error {
 
 		video.Size = file.Size
 
+		tmpTime := strings.Split(time.Now().UTC().String(), " ")
+
+		video.CreatedAt = strings.Join(tmpTime[:len(tmpTime)-1], " ")
+
 		video.Create()
 	}
 	if err := c.SaveFile(file, fmt.Sprintf("./data/%s", filename)); err != nil {
 		return err
 	}
 	// Return success
-	return c.Status(fiber.StatusAccepted).SendString(fmt.Sprintf("./data/%s", filename))
+	return c.Status(fiber.StatusAccepted).SendString(filename)
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -178,7 +184,7 @@ func retriveFile(c *fiber.Ctx) error {
 	return c.SendFile(file.Name())
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -194,7 +200,7 @@ func videoDetail(c *fiber.Ctx) error {
 	return c.JSON(video.Get())
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -219,12 +225,12 @@ func createWithoutUplaod(c *fiber.Ctx) error {
 	}
 
 	channel.Id = uint(partial.ChannelId)
-
-	if channel.Get() == nil {
+	channel, err := channel.Get()
+	if err != nil {
 		return c.SendStatus(fiber.ErrBadGateway.Code)
 	}
 
-	video.ChannelId = channel.Get().Id
+	video.ChannelId = channel.Id
 
 	if partial.Name != "" {
 		video.Name = partial.Name
@@ -241,7 +247,7 @@ func createWithoutUplaod(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(video)
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -281,7 +287,7 @@ func patchVideoByFileName(c *fiber.Ctx) error {
 
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -308,7 +314,7 @@ func deleteVideo(c *fiber.Ctx) error {
 	return c.SendStatus(201)
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -331,7 +337,7 @@ func getVideoByFileId(c *fiber.Ctx) error {
 	return c.SendFile(video.VideoURL)
 }
 
-// Get All videos
+// Get All video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files

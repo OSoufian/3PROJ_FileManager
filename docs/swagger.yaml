@@ -115,7 +115,7 @@ paths:
       summary: Files
       tags:
       - Files
-  /videos/:videoID:
+  /video/:videoID:
     get:
       description: get a video by id
       responses:
@@ -128,9 +128,9 @@ paths:
       summary: Videos
       tags:
       - Videos
-  /videos/chann/:channId:
+  /video/chann/:channId:
     get:
-      description: get all videos from a channel
+      description: get all video from a channel
       responses:
         "200":
           description: OK

@@ -17,20 +17,20 @@ func Videos(router fiber.Router) {
 
 }
 
-// Get All videos
+// Get All video
 // @Summary Videos
-// @Description get all videos
+// @Description get all video
 // @Tags Videos
 // @Success 200 {Videos} List Videos
 // @Failure 404
-// @Router /videos/:videoID [get]
+// @Router /video/:videoID [get]
 func getAllvideos(c *fiber.Ctx) error {
 	videosModels := domain.Videos{}
-	videos, err := videosModels.GetAll()
+	video, err := videosModels.GetAll()
 	if err != nil {
 		return c.SendStatus(fiber.ErrBadRequest.Code)
 	}
-	return c.Status(200).JSON(videos)
+	return c.Status(200).JSON(video)
 }
 
 // Get Video by Id
@@ -39,7 +39,7 @@ func getAllvideos(c *fiber.Ctx) error {
 // @Tags Videos
 // @Success 200 {Videos} Get a Video by id
 // @Failure 404
-// @Router /videos/:videoID [get]
+// @Router /video/:videoID [get]
 func getVideoById(c *fiber.Ctx) error {
 	id := c.Params("videoId")
 	videoId, err := strconv.ParseInt(id, 10, 64)
@@ -55,11 +55,11 @@ func getVideoById(c *fiber.Ctx) error {
 
 // Get Channel Videos
 // @Summary Videos
-// @Description get all videos from a channel
+// @Description get all video from a channel
 // @Tags Videos
 // @Success 200 {Videos} List of Videos
 // @Failure 404
-// @Router /videos/chann/:channId [get]
+// @Router /video/chann/:channId [get]
 func getChannelVideos(c *fiber.Ctx) error {
 	id := c.Params("channId")
 	channId, err := strconv.ParseInt(id, 10, 64)

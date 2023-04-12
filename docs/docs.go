@@ -188,7 +188,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/videos/:videoID": {
+        "/video/:videoID": {
             "get": {
                 "description": "get a video by id",
                 "tags": [
@@ -208,9 +208,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/videos/chann/:channId": {
+        "/video/chann/:channId": {
             "get": {
-                "description": "get all videos from a channel",
+                "description": "get all video from a channel",
                 "tags": [
                     "Videos"
                 ],

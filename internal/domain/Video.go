@@ -14,24 +14,24 @@ type Videos struct {
 	IsBlock     bool   `gorm:"type:boolean;default:false"`
 }
 
-func (channel *Channel) Get() *Channel {
-	tx := Db.Where("id = ?", channel.Id).First(channel)
+func (channel *Channel) Get() (*Channel, error) {
+	err := Db.Where("id = ?", channel.Id).First(channel).Error
 
-	if tx.RowsAffected == 0 {
-		return nil
+	if err != nil {
+		return nil, err
 	}
 
-	return channel
+	return channel, nil
 }
 
-func (video *Videos) GetAllVideosFromChannel() []Videos {
-	var videos []Videos
-	err := Db.Where("channel_id = ?", video.ChannelId)
+func (videos *Videos) GetAllVideosFromChannel() []Videos {
+	var video []Videos
+	err := Db.Where("channel_id = ?", videos.ChannelId)
 	if err != nil {
 		return nil
 	}
 
-	return videos
+	return video
 
 }
 
