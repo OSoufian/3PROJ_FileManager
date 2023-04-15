@@ -26,7 +26,7 @@ func (channel *Channel) Get() (*Channel, error) {
 
 func (videos *Videos) GetAllVideosFromChannel() []Videos {
 	var video []Videos
-	err := Db.Where("channel_id = ?", videos.ChannelId)
+	err := Db.Where("channel_id = ? and is_block = false and is_hide = false", videos.ChannelId)
 	if err != nil {
 		return nil
 	}
@@ -67,7 +67,7 @@ func (video *Videos) GetById() *Videos {
 
 func (video *Videos) GetAll() ([]Videos, error) {
 	var results []Videos
-	err := Db.Find(&results).Error
+	err := Db.Where("is_block = false and is_hide = false").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}
