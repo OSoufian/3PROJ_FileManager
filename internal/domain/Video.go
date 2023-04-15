@@ -12,6 +12,7 @@ type Videos struct {
 	Channel     Channel
 	CreatedAt   string `gorm:"type:time with time zone"`
 	IsBlock     bool   `gorm:"type:boolean;default:false"`
+	IsHide      bool   `gorm:"type:boolean;default:false"`
 }
 
 func (channel *Channel) Get() (*Channel, error) {
@@ -84,5 +85,5 @@ func (video *Videos) Delete() {
 }
 
 func (video *Videos) Update() {
-	Db.Save(&video)
+	Db.Where("id = ?", video.Id).Updates(video)
 }
