@@ -23,7 +23,7 @@ func Videos(router fiber.Router) {
 // @Tags Videos
 // @Success 200 {Videos} List Videos
 // @Failure 404
-// @Router /video/:videoID [get]
+// @Router /video [get]
 func getAllvideos(c *fiber.Ctx) error {
 	videosModels := domain.Videos{}
 	video, err := videosModels.GetAll()
