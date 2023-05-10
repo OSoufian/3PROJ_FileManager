@@ -3,18 +3,20 @@ package controllers
 import (
 	"strconv"
 	"video/internal/domain"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func Videos(router fiber.Router) {
 
-	router.Get("/", getAllvideos)
+	router.Get("/videos", getAllvideos)
 
 	router.Get("/:videoId", getVideoById)
 
 	router.Get("/chann/:channId", getChannelVideos)
 
+	router.Get("/", retrieveVideo)
 }
 
 // Get All video
@@ -74,4 +76,27 @@ func getChannelVideos(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusAccepted).JSON(video.GetAllVideosFromChannel())
 
+}
+
+// Get video
+// @Summary Files
+// @Description retrieve a file
+// @Tags Files
+// @Success 200 {Blob} Retrieve a blob file
+// @Query videoname
+// @Failure 404
+// @Router /video/videos?videoname [get]
+func retrieveVideo(c *fiber.Ctx) error {
+	// Get the videoname from the request parameters
+	videoname := c.Query("videoname")
+
+	// Open the file
+	file, err := os.Open("./data/videos/" + videoname)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Return the file with correct Content-Length header
+	return c.SendFile(file.Name())
 }

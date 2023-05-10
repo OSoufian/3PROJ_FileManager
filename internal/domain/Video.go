@@ -6,13 +6,13 @@ type Videos struct {
 	Description string `gorm:"type:varchar(255);"`
 	Icon        string `gorm:"type:varchar(255);"`
 	VideoURL    string `gorm:"type:varchar(255);"`
-	Views       int    `gorm:"type:integer default 0"`
+	Views       int    `gorm:"type:integer"`
 	Size        int64  `gorm:"type:integer"`
 	ChannelId   uint   `gorm:"foreignKey:id"`
 	Channel     Channel
 	CreatedAt   string `gorm:"type:time with time zone"`
 	IsBlock     bool   `gorm:"type:boolean;default:false"`
-	// IsHide      bool   `gorm:"type:boolean;default:false"`
+	IsHide      bool   `gorm:"type:boolean;default:false"`
 }
 
 func (channel *Channel) Get() (*Channel, error) {
@@ -27,7 +27,7 @@ func (channel *Channel) Get() (*Channel, error) {
 
 func (videos *Videos) GetAllVideosFromChannel() []Videos {
 	var video []Videos
-	err := Db.Where("channel_id = ? and is_block = false", videos.ChannelId).Find(&video).Error
+	err := Db.Where("channel_id = ? and is_block = false and is_hide = false", videos.ChannelId).Find(&video).Error
 	if err != nil {
 		return nil
 	}
@@ -68,7 +68,7 @@ func (video *Videos) GetById() *Videos {
 
 func (video *Videos) GetAll() ([]Videos, error) {
 	var results []Videos
-	err := Db.Where("is_block = false").Find(&results).Error
+	err := Db.Where("is_block = false and is_hide = false").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}

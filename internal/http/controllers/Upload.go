@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 	"video/internal/domain"
+	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -46,8 +47,6 @@ func Uploader(router fiber.Router) {
 
 	router.Post("/:type", fileUpload)
 
-	router.Get("/", retriveFile)
-
 	router.Get("/detail", videoDetail)
 
 	router.Put("/", createWithoutUplaod)
@@ -56,7 +55,7 @@ func Uploader(router fiber.Router) {
 
 	router.Delete("/", deleteVideo)
 
-	router.Get("/files", retriveAllFile)
+	router.Get("/files", retrieveAllFile)
 
 	router.Get("/files/:id", getVideoByFileId)
 }
@@ -108,6 +107,7 @@ func fileUpload(c *fiber.Ctx) error {
 		return c.SendString("filename parameter not found")
 	}
 
+	filePath := fmt.Sprintf("./data/images/%s", filename)
 	if fileType == "video" {
 
 		video := new(domain.Videos)
@@ -153,35 +153,13 @@ func fileUpload(c *fiber.Ctx) error {
 		video.CreatedAt = strings.Join(tmpTime[:len(tmpTime)-1], " ")
 
 		video.Create()
+		filePath = fmt.Sprintf("./data/videos/%s", filename)
 	}
-	if err := c.SaveFile(file, fmt.Sprintf("./data/%s", filename)); err != nil {
+	if err := c.SaveFile(file, filePath); err != nil {
 		return err
 	}
 	// Return success
 	return c.Status(fiber.StatusAccepted).SendString(filename)
-}
-
-// Get All video
-// @Summary Files
-// @Description retrieve a file
-// @Tags Files
-// @Success 200 {Blob} Retrieve a blob file
-// @Query filename
-// @Failure 404
-// @Router /files [get]
-func retriveFile(c *fiber.Ctx) error {
-	// Get the filename from the request parameters
-	filename := c.Query("filename")
-
-	// Open the file
-	file, err := os.Open("./data/" + filename)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// Return the file with correct Content-Length header
-	return c.SendFile(file.Name())
 }
 
 // Get All video
@@ -287,7 +265,7 @@ func patchVideoByFileName(c *fiber.Ctx) error {
 
 }
 
-// Get All video
+// Delete video
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -306,7 +284,7 @@ func deleteVideo(c *fiber.Ctx) error {
 		video.Delete()
 	}
 
-	if err := os.Remove("./data/" + filename); err != nil {
+	if err := os.Remove("./data/videos/" + filename); err != nil {
 		log.Println(err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
@@ -314,7 +292,7 @@ func deleteVideo(c *fiber.Ctx) error {
 	return c.SendStatus(201)
 }
 
-// Get All video
+// Get video by file id
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -337,7 +315,7 @@ func getVideoByFileId(c *fiber.Ctx) error {
 	return c.SendFile(video.VideoURL)
 }
 
-// Get All video
+// Get All files
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -345,36 +323,29 @@ func getVideoByFileId(c *fiber.Ctx) error {
 // @Params id
 // @Failure 404
 // @Router /files/files [get]
-func retriveAllFile(c *fiber.Ctx) error {
+func retrieveAllFile(c *fiber.Ctx) error {
 
-	// quering := c.Query("quering")
+    // Define the directory path
+    directoryPath := "./data"
 
-	// Define the directory path
-	directoryPath := "./data"
+    // Define a slice to store the file names
+    var fileNames []string
 
-	// Open the directory
-	directory, err := os.Open(directoryPath)
-	if err != nil {
-		return err
-	}
-	defer directory.Close()
+    // Walk the directory and its subdirectories
+    err := filepath.Walk(directoryPath, func(path string, info os.FileInfo, err error) error {
+        if err != nil {
+            return err
+        }
+        if !info.Mode().IsRegular() {
+            return nil
+        }
+        fileNames = append(fileNames, info.Name())
+        return nil
+    })
+    if err != nil {
+        return err
+    }
 
-	// Read the directory contents
-	files, err := directory.Readdir(0)
-	if err != nil {
-		return err
-	}
-
-	// Define a slice to store the file names
-	var fileNames []string
-
-	// Loop through the files and add their names to the slice
-	for _, file := range files {
-		if file.Mode().IsRegular() {
-			fileNames = append(fileNames, file.Name())
-		}
-	}
-
-	// Return the file names as a JSON response
-	return c.JSON(fileNames)
+    // Return the file names as a JSON response
+    return c.JSON(fileNames)
 }
