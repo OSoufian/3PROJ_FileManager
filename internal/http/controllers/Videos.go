@@ -10,7 +10,7 @@ import (
 
 func Videos(router fiber.Router) {
 
-	router.Get("/videos", getAllvideos)
+	router.Get("/all", getAllvideos)
 
 	router.Get("/:videoId", getVideoById)
 
@@ -52,7 +52,7 @@ func getVideoById(c *fiber.Ctx) error {
 
 	video.Id = uint(videoId)
 
-	return c.Status(fiber.StatusAccepted).JSON(video.GetById())
+	return c.Status(fiber.StatusAccepted).JSON(video.VideoType())
 }
 
 // Get Channel Videos
@@ -85,7 +85,7 @@ func getChannelVideos(c *fiber.Ctx) error {
 // @Success 200 {Blob} Retrieve a blob file
 // @Query videoname
 // @Failure 404
-// @Router /video/videos?videoname [get]
+// @Router /video?videoname [get]
 func retrieveVideo(c *fiber.Ctx) error {
 	// Get the videoname from the request parameters
 	videoname := c.Query("videoname")

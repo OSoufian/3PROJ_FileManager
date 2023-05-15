@@ -45,7 +45,9 @@ func (p *partialCreateVideo) UnmarshalString(body string) error {
 
 func Uploader(router fiber.Router) {
 
-	router.Post("/:type", fileUpload)
+	router.Post("/video", uploadVideo)
+
+	router.Post("/image", uploadImage)
 
 	router.Get("/detail", videoDetail)
 
@@ -60,7 +62,7 @@ func Uploader(router fiber.Router) {
 	router.Get("/files/:id", getVideoByFileId)
 }
 
-// Get All video
+// upload image
 // @Summary Files
 // @Description retrieve a file
 // @Tags Files
@@ -70,8 +72,64 @@ func Uploader(router fiber.Router) {
 // @MultipartForm info
 // @Failure 404
 // @Router /files [post]
-func fileUpload(c *fiber.Ctx) error {
+func uploadImage(c *fiber.Ctx) error {
 
+	// c.Request().ContinueReadBodyStream()
+	fileType := "image"
+
+	// Get the file from form data
+	form, err := c.MultipartForm()
+	if err != nil {
+		return err
+	}
+
+	files := form.File["image"]
+	// Change to match your field name
+	if len(files) == 0 {
+		// Change to match your field name
+		files = form.File["image"]
+	}
+
+	if len(files) == 0 {
+		return c.SendString("no file found")
+	}
+	file := files[0]
+
+	if fileType == "video" {
+		return c.SendString("not an image")
+	}
+
+	// Parse the filename parameter from the header
+	header := file.Header.Get("Content-Disposition")
+	_, params, err := mime.ParseMediaType(header)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	filename, ok := params["filename"]
+	if !ok {
+		return c.SendString("filename parameter not found")
+	}
+
+	filePath := fmt.Sprintf("./data/images/%s", filename)
+	if err := c.SaveFile(file, filePath); err != nil {
+		return err
+	}
+	// Return success
+	return c.Status(fiber.StatusAccepted).SendString(filename)
+}
+
+// // Upload video
+// // @Summary Files
+// // @Description retrieve a file
+// // @Tags Files
+// // @Success 200 {Videos} Videos "video info"
+// // @MultipartForm video
+// // @MultipartForm image
+// // @MultipartForm info
+// // @Failure 404
+// // @Router /files [post]
+func uploadVideo(c *fiber.Ctx) error {
 	// c.Request().ContinueReadBodyStream()
 
 	fileType := "video"
@@ -85,9 +143,7 @@ func fileUpload(c *fiber.Ctx) error {
 	files := form.File["video"]
 	// Change to match your field name
 	if len(files) == 0 {
-		// Change to match your field name
-		files = form.File["image"]
-		fileType = "image"
+		c.SendString("not a video")
 	}
 
 	if len(files) == 0 {
@@ -107,7 +163,7 @@ func fileUpload(c *fiber.Ctx) error {
 		return c.SendString("filename parameter not found")
 	}
 
-	filePath := fmt.Sprintf("./data/images/%s", filename)
+	// filePath := fmt.Sprintf("./data/images/%s", filename)
 	if fileType == "video" {
 
 		video := new(domain.Videos)
@@ -153,13 +209,15 @@ func fileUpload(c *fiber.Ctx) error {
 		video.CreatedAt = strings.Join(tmpTime[:len(tmpTime)-1], " ")
 
 		video.Create()
-		filePath = fmt.Sprintf("./data/videos/%s", filename)
+		filePath := fmt.Sprintf("./data/videos/%s", filename)
+
+		if err := c.SaveFile(file, filePath); err != nil {
+			return err
+		}
+		// Return status accepted
+		return c.Status(fiber.StatusAccepted).SendString(filename)
 	}
-	if err := c.SaveFile(file, filePath); err != nil {
-		return err
-	}
-	// Return success
-	return c.Status(fiber.StatusAccepted).SendString(filename)
+	return c.SendStatus(fiber.ErrBadRequest.Code)
 }
 
 // Get All video
