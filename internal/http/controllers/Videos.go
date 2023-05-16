@@ -52,7 +52,7 @@ func getVideoById(c *fiber.Ctx) error {
 
 	video.Id = uint(videoId)
 
-	return c.Status(fiber.StatusAccepted).JSON(video.VideoType())
+	return c.Status(fiber.StatusAccepted).JSON(video.GetById())
 }
 
 // Get Channel Videos
