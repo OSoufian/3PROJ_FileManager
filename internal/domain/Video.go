@@ -1,5 +1,7 @@
 package domain
 
+import "strings"
+
 type Videos struct {
 	Id          uint   `gorm:"primarykey;autoIncrement;not null"`
 	Name        string `gorm:"type:varchar(255);"`
@@ -69,6 +71,15 @@ func (video *Videos) GetById() *Videos {
 func (video *Videos) GetAll() ([]Videos, error) {
 	var results []Videos
 	err := Db.Where("is_block = false and is_hide = false").Find(&results).Error
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func (video *Videos) GetSearch(search string) ([]Videos, error) {
+	var results []Videos
+	err := Db.Where("LOWER(name) LIKE ? and is_block = false and is_hide = false", "%"+strings.ToLower(search)+"%").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}

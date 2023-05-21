@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"video/internal/domain"
 	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,6 +28,11 @@ func Videos(router fiber.Router) {
 // @Failure 404
 // @Router /video [get]
 func getAllvideos(c *fiber.Ctx) error {
+		
+	if strings.TrimSpace(c.Query("q")) != "" {
+		return getSearchVideos(c)
+	}
+
 	videosModels := domain.Videos{}
 	video, err := videosModels.GetAll()
 	if err != nil {
@@ -99,4 +105,21 @@ func retrieveVideo(c *fiber.Ctx) error {
 
 	// Return the file with correct Content-Length header
 	return c.SendFile(file.Name())
+}
+
+// Get Searched video
+// @Summary Videos
+// @Description get searched video
+// @Tags Videos
+// @Success 200 {Videos} List Videos
+// @Failure 404
+// @Router /video [get]
+func getSearchVideos(c *fiber.Ctx) error {
+	searchQuery := c.Query("q") // Get the search query from the query parameter "q"
+	videosModels := domain.Videos{}
+	video, err := videosModels.GetSearch(searchQuery)
+	if err != nil {
+		return c.SendStatus(fiber.ErrBadRequest.Code)
+	}
+	return c.Status(fiber.StatusOK).JSON(video)
 }
