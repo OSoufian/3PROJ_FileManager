@@ -36,20 +36,22 @@ func main() {
 		log.Fatal(err)
 	}
 	// Assuming you're using the "database/sql" package
-	tx := domain.Db.Begin()
-	tx.AutoMigrate(&domain.Channel{})
-	tx.AutoMigrate(&domain.Videos{})
 
-	if tx.Error != nil {
-		// Handle error
-		tx.Rollback()
-		return
-	}
+	if err != nil {
+        log.Fatal(err)
+    }
+    // Assuming you're using the "database/sql" package
+    tx := domain.Db.Begin()
+    tx.AutoMigrate(&domain.Videos{})
 
-	if tx.Commit().Error != nil {
-		// Handle error
-		tx.Rollback()
-		return
+    if tx.Error != nil {
+        // Handle error
+        tx.Rollback()
+    }
+
+    if tx.Commit().Error != nil {
+        // Handle error
+        tx.Rollback()
 	}
 
 	// Start Fiber app

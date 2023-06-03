@@ -79,7 +79,7 @@ func (video *Videos) GetAll() ([]Videos, error) {
 
 func (video *Videos) GetSearch(search string) ([]Videos, error) {
 	var results []Videos
-	err := Db.Where("LOWER(name) LIKE ? and is_block = false and is_hide = false", "%"+strings.ToLower(search)+"%").Find(&results).Error
+	err := Db.Where("LOWER(name) LIKE ? OR LOWER(description) LIKE ? and is_block = false and is_hide = false", "%"+strings.ToLower(search)+"%", "%"+strings.ToLower(search)+"%").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}
