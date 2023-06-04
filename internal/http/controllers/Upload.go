@@ -24,6 +24,7 @@ type partialVideo struct {
 	Views       int    `json:"Views"`
 	Size        int64  `json:"Size"`
 	CreatedAt   string `json:"CreatedAt"`
+	IsHide     	bool   `json:"IsHide"`
 	IsBlock     bool   `json:"IsBlock"`
 }
 
@@ -316,6 +317,8 @@ func patchVideoByFileName(c *fiber.Ctx) error {
 	if partial.Icon != "" {
 		video.Icon = partial.Icon
 	}
+	video.IsHide = partial.IsHide
+	video.IsBlock = partial.IsBlock
 
 	video.Update()
 
