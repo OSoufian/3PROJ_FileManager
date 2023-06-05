@@ -16,16 +16,17 @@ import (
 )
 
 type partialVideo struct {
-	Id          uint   `json:"Id"`
-	Name        string `json:"Name"`
-	Description string `json:"Description"`
-	Icon        string `json:"Icon"`
-	VideoURL    string `json:"VideoURL"`
-	Views       int    `json:"Views"`
-	Size        int64  `json:"Size"`
-	CreatedAt   string `json:"CreatedAt"`
-	IsHide     	bool   `json:"IsHide"`
-	IsBlock     bool   `json:"IsBlock"`
+	Id           uint   `json:"Id"`
+	Name          string `json:"Name"`
+	Description   string `json:"Description"`
+	Icon          string `json:"Icon"`
+	VideoURL      string `json:"VideoURL"`
+	Views         int    `json:"Views"`
+	Size          int64  `json:"Size"`
+	CreatedAt     string `json:"CreatedAt"`
+	CreationDate  string `json:"CreationDate"`
+	IsHide     	  bool   `json:"IsHide"`
+	IsBlock       bool   `json:"IsBlock"`
 }
 
 type partialCreateVideo struct {
@@ -216,7 +217,11 @@ func uploadVideo(c *fiber.Ctx) error {
 			return err
 		}
 		// Return status accepted
-		return c.Status(fiber.StatusAccepted).SendString(filename)
+		return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
+			"id":       video.Id,
+			"filename": filename,
+			"status": 200,
+		})
 	}
 	return c.SendStatus(fiber.ErrBadRequest.Code)
 }
@@ -319,9 +324,10 @@ func patchVideoByFileName(c *fiber.Ctx) error {
 	}
 	video.IsHide = partial.IsHide
 	video.IsBlock = partial.IsBlock
-
+	video.Views = partial.Views
+	
 	video.Update()
-
+	
 	return c.Status(fiber.StatusAccepted).JSON(video)
 
 }
