@@ -77,11 +77,12 @@ func getChannelVideos(c *fiber.Ctx) error {
 	}
 
 	video := domain.Videos{}
-
 	video.ChannelId = uint(channId)
 
-	return c.Status(fiber.StatusAccepted).JSON(video.GetAllVideosFromChannel())
-
+	orderByParams := c.Query("orderBy")
+	orderBy := strings.Split(orderByParams, ",")
+	orderedVideos := video.GetAllVideosFromChannel(orderBy...)
+	return c.Status(fiber.StatusAccepted).JSON(orderedVideos)
 }
 
 // Get video

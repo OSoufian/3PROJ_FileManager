@@ -209,6 +209,7 @@ func uploadVideo(c *fiber.Ctx) error {
 		tmpTime := strings.Split(time.Now().UTC().String(), " ")
 
 		video.CreatedAt = strings.Join(tmpTime[:len(tmpTime)-1], " ")
+		video.CreationDate = time.Now().Format("2006-01-02")
 
 		video.Create()
 		filePath := fmt.Sprintf("./data/videos/%s", filename)
