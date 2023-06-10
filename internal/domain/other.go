@@ -39,6 +39,15 @@ type UserModel struct {
 	Role          []Role    `gorm:"many2many:user_roles;"`
 }
 
+type Message struct {
+	Id      uint       `gorm:"primarykey;autoIncrement;not null"`
+	Content string     `json:"Content"`
+	VideoId uint       `gorm:"foreignKey:id"`
+	UserId  uint       `gorm:"foreignKey:id"`
+	User    UserModel
+	Created string     `gorm:"type:time without time zone"`
+}
+
 func (user *UserModel) TableName() string {
 	return "users"
 }
@@ -47,4 +56,7 @@ func (r *Role) TableName() string {
 }
 func (channel *Channel) TableName() string {
 	return "channels"
+}
+func (message *Message) TableName() string {
+	return "messages"
 }

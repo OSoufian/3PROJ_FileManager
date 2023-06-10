@@ -45,6 +45,32 @@ func (videos *Videos) GetAllVideosFromChannel(orderBy ...string) []Videos {
 	return video
 }
 
+func (videos *Videos) DeleteAllVideosFromChannel(channelID uint) error {
+	var videoList []Videos
+
+	db := Db.Where("channel_id = ?", channelID)
+
+	err := db.Find(&videoList).Error
+	if err != nil {
+		return err
+	}
+
+	// Delete each video and its associated messages
+	for _, video := range videoList {
+		// Delete messages associated with the video
+		if err := Db.Where("video_id = ?", video.Id).Delete(&Message{}).Error; err != nil {
+			return err
+		}
+
+		// Delete the video
+		if err := Db.Delete(&video).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (video *Videos) TableName() string {
 	return "video_info"
 }

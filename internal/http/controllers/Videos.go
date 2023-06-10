@@ -17,6 +17,8 @@ func Videos(router fiber.Router) {
 
 	router.Get("/chann/:channId", getChannelVideos)
 
+	router.Delete("/chann/:channId", deleteChannelVideos)
+
 	router.Get("/", retrieveVideo)
 }
 
@@ -83,6 +85,20 @@ func getChannelVideos(c *fiber.Ctx) error {
 	orderBy := strings.Split(orderByParams, ",")
 	orderedVideos := video.GetAllVideosFromChannel(orderBy...)
 	return c.Status(fiber.StatusAccepted).JSON(orderedVideos)
+}
+
+func deleteChannelVideos(c *fiber.Ctx) error {
+	id := c.Params("channId")
+	channId, err := strconv.ParseInt(id, 10, 64)
+
+	if err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).JSON(err)
+	}
+
+	video := domain.Videos{}
+
+	video.DeleteAllVideosFromChannel(uint(channId))
+	return c.Status(fiber.StatusOK).JSON(video)
 }
 
 // Get video
