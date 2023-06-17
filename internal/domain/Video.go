@@ -1,6 +1,9 @@
 package domain
 
-import "strings"
+import (
+	"strings"
+	// "time"
+)
 
 type Videos struct {
 	Id            uint   `gorm:"primarykey;autoIncrement;not null"`
@@ -12,8 +15,8 @@ type Videos struct {
 	Size          int64  `gorm:"type:integer"`
 	ChannelId     uint   `gorm:"foreignKey:id"`
 	Channel       Channel
-	CreatedAt     string `gorm:"type:time with time zone"`
-	CreationDate  string `gorm:"type:time with time zone"`
+	CreatedAt     string `gorm:"column:created_at"`
+	CreationDate  string `gorm:"column:creation_date"`
 	IsBlock       bool   `gorm:"type:boolean;default:false"`
 	IsHide        bool   `gorm:"type:boolean;default:false"`
 }
@@ -103,7 +106,7 @@ func (video *Videos) GetById() *Videos {
 
 func (video *Videos) GetAll() ([]Videos, error) {
 	var results []Videos
-	err := Db.Where("is_block = false and is_hide = false order by created_at asc").Find(&results).Error
+	err := Db.Where("is_block = false and is_hide = false").Find(&results).Error
 	if err != nil {
 		return nil, err
 	}
